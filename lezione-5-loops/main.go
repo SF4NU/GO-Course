@@ -1,0 +1,35 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	// x := 0
+	// for x < 5 {
+	// 	fmt.Println("value of x is:", x)
+	// 	x++
+	// }
+
+	// for i := 0; i < 5; i++ { //i loop sono uguali ai loop in js e php
+	// 	fmt.Println("value of i is: ", i)
+	// }
+
+	names := []string{"mario", "luigi", "yoshi", "peach"}
+
+	// for i := 0; i < len(names); i++ {
+	// 	fmt.Println(names[i])
+	// }
+	
+	// for index, value := range names {
+	// 	fmt.Printf("the value at index %v is %v \n", index, value)
+	// }
+
+	for _, value := range names { //stessa cosa con js!
+		fmt.Printf("the value is %v \n", value)
+		value = "new string"
+	}
+
+	fmt.Println(names)
+
+}
