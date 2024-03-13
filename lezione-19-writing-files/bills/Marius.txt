@@ -1,0 +1,6 @@
+Bill breakdown: 
+Pomodori:                 ...$5.99 
+Torta:                    ...$4.5 
+Cioccolato:               ...$2.2 
+tip:                      ...$20.5 
+total:                    ...$33.19
