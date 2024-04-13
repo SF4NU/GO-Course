@@ -19,7 +19,7 @@ func getInput(prompt string, r *bufio.Reader) (string, error) {
 	return strings.TrimSpace(input), err
 }
 
-func startTimer() {
+func startCountdown() {
 	time.Sleep(1 * time.Second)
 	fmt.Println("Il quiz comincia tra 3 secondi")
 	fmt.Println("3")
@@ -60,11 +60,11 @@ func main() {
 					log.Fatal(err)
 				}
 				chosenTime = convertedTime
-				startTimer()
+				startCountdown()
 			}()
 		} else if choice == "2" {
 			fmt.Println("Hai scelto di continuare con il tempo predefinito di 30 secondi!")
-			startTimer()
+			startCountdown()
 
 		} else {
 			fmt.Printf("La risposta: %v, non è accettata \n", choice)
@@ -74,6 +74,25 @@ func main() {
 		timer := time.NewTimer(time.Duration(chosenTime) * time.Second)
 
 		for {
+			record, err := r.Read()
+			if err == io.EOF {
+				fmt.Printf("Risposte corrette: %v su 20 \n", count)
+				fmt.Println("Press Enter to exit...")
+				bufio.NewReader(os.Stdin).ReadBytes('\n')
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("Quanto fa %v ? \n", record[0])
+
+			answerCh := make(chan string)
+			go func() {
+				reader := bufio.NewReader(os.Stdin)
+				answer, _ := getInput("Scrivi la risposta corretta: ", reader)
+				answerCh <- answer
+			}()
+
 			select {
 			case <-timer.C:
 				fmt.Println("Tempo finito")
@@ -81,21 +100,7 @@ func main() {
 				fmt.Println("Schiaccia invio per uscire...")
 				bufio.NewReader(os.Stdin).ReadBytes('\n')
 				return
-			default:
-				record, err := r.Read()
-				if err == io.EOF {
-					fmt.Printf("Risposte corrette: %v su 20 \n", count)
-					fmt.Println("Press Enter to exit...")
-					bufio.NewReader(os.Stdin).ReadBytes('\n')
-					break
-				}
-				if err != nil {
-					log.Fatal(err)
-				}
-				fmt.Printf("Quanto fa %v ? \n", record[0])
-				reader := bufio.NewReader(os.Stdin)
-				answer, _ := getInput("Scrivi la risposta corretta: ", reader)
-
+			case answer := <-answerCh:
 				if answer == record[1] {
 					count++
 					fmt.Printf("%v è uguale a %v \n \n", record[0], answer)
